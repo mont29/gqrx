@@ -1281,8 +1281,24 @@ void MainWindow::iqFftTimeout()
         pwr = pwr_scale * (pt.imag() * pt.imag() + pt.real() * pt.real());
         d_realFftData[i] = 10.0 * log10f(pwr + 1.0e-20);
 
-        /* FFT averaging */
-        d_iirFftData[i] += d_fftAvg * (d_realFftData[i] - d_iirFftData[i]);
+    }
+
+    float sum = 0.0f;
+    const int window = 50;
+    float samples[window] = {0.0f};
+    for (i = 0; i < fftsize; i++)
+    {
+        const int sample_idx = i % window;
+        sum -= samples[sample_idx];
+        samples[sample_idx] = d_realFftData[i];
+        sum += samples[sample_idx];
+        if (i >= window/2)
+        {
+            d_realFftData[i - window/2] = sum / window;
+            /* FFT averaging */
+            d_iirFftData[i - window/2] += d_fftAvg * (d_realFftData[i - window/2] - d_iirFftData[i - window/2]);
+        }
+
     }
 
     ui->plotter->setNewFttData(d_iirFftData, d_realFftData, fftsize);
