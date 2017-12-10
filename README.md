@@ -11,6 +11,19 @@ Gqrx can operate as an AM/FM/SSB receiver with audio output or as an FFT-only
 instrument. There are also various hooks for interacting with external
 application using nertwork sockets.
 
+Fork's Goal: Radio-track
+------------------------
+
+Primary goal of this fork is to tweak gqrx for a specific need: radio-tracking
+for wild life studies.
+
+Radio-tracking consists in placing small (sometimes **very** small, less than
+0.5g…) radio-emitters on animals, and following them using directional antennas
+and dedicated receivers.
+
+Due to high price of dedicated receivers (often above 1k$), this project intends
+to investigate whether software radio coupled to a good RX key can be an good
+alternative (tests are being done with a air-spy mini currently).
 
 Download
 --------
