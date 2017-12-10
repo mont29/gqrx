@@ -41,7 +41,7 @@
 #define CTRL_XAXIS_HEGHT 0.4	// vertical position of horizontal axis
 #define CTRL_NEEDLE_TOP 0.4		// vertical position of top of needle triangle
 
-#define MIN_DB -100.0
+#define MIN_DB -100.0  // Must be multiple of 20
 #define MAX_DB +0.0
 
 CMeter::CMeter(QWidget *parent) : QFrame(parent)
@@ -58,7 +58,7 @@ CMeter::CMeter(QWidget *parent) : QFrame(parent)
     m_OverlayPixmap = QPixmap(0,0);
     m_Size = QSize(0,0);
     m_Slevel = 0;
-    m_dBm = -120;
+    m_dBm = MIN_DB;
     d_alpha_decay = 0.25; // FIXME: Should set delta-t and Fs instead
     d_alpha_rise = 0.7;   // FIXME: Should set delta-t and Fs instead
 }
@@ -197,7 +197,7 @@ void CMeter::DrawOverlay()
 
     int w = m_OverlayPixmap.width();
     int h = m_OverlayPixmap.height();
-    int x,y;
+    int i, j;
     QRect rect;
     QPainter painter(&m_OverlayPixmap);
 
@@ -209,35 +209,35 @@ void CMeter::DrawOverlay()
     qreal magstart = (qreal) h * CTRL_MAJOR_START;
     qreal minstart = (qreal) h * CTRL_MINOR_START;
     qreal hstop = (qreal) w - marg;
+    const int num_tics = (int)((MAX_DB - MIN_DB) / 10.0);
+    const qreal step_tic = (hstop - marg) / num_tics;
+    
     painter.setPen(QPen(Qt::white, 1, Qt::SolidLine));
     painter.drawLine(QLineF(marg, hline, hstop, hline));        // top line
     painter.drawLine(QLineF(marg, hline+8, hstop, hline+8));    // bottom line
-    qreal xpos = marg;
-    for (x = 0; x < 11; x++) {
+    for (i = 0; i <= num_tics; i++) {
+        const qreal xpos = marg + i * step_tic;
         if (x & 1)
             //minor tics
             painter.drawLine(QLineF(xpos, minstart, xpos, hline));
         else
             painter.drawLine(QLineF(xpos, magstart, xpos, hline));
-        xpos += (hstop-marg) / 10.0;
     }
 
     // draw scale text
     // create Font to use for scales
     QFont Font("Arial");
-    y = h / 4;
-    Font.setPixelSize(y);
+    Font.setPixelSize(h / 4);
     Font.setWeight(QFont::Normal);
     painter.setFont(Font);
-    int rwidth = (int)((hstop - marg) / 5.0);
-    m_Str = "-100";
-    rect.setRect(marg / 2 - 5, 0, rwidth, magstart);
 
-    for (x = MIN_DB; x <= MAX_DB; x += 20)
+    const int rwidth = (int)((hstop - marg) / (num_tics / 2.0) / (num_tics / 2.0) * ((num_tics / 2.0) + 1));
+    for (i = 0, j = MIN_DB; j <= MAX_DB; i += 2, j += 20)
     {
-        m_Str.setNum(x);
+        const int xpos = (int)(marg + i * step_tic - rwidth / 2.0);
+        rect.setRect(xpos, 0, rwidth, magstart);
+        m_Str.setNum(j);
         painter.drawText(rect, Qt::AlignHCenter|Qt::AlignVCenter, m_Str);
-        rect.translate(rwidth, 0);
     }
 }
 
