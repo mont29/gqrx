@@ -610,10 +610,14 @@ void CIoConfig::updateInputSampleRates(int rate)
  * include decimations up to a meaningful maximum value, so that the quadrature
  * rate doesn't get below 48 ksps.
  */
+#define MIN_RATE 8000
+#define MAX_DECIM 11
 void CIoConfig::updateDecimations(void)
 {
     bool        ok;
     int         rate;
+    short       decim;
+    const char  decim_str[MAX_DECIM][8] = {"None", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024"};
 
     // get current sample rate from combo box
     rate= ui->inSrCombo->currentText().toInt(&ok);
@@ -621,25 +625,10 @@ void CIoConfig::updateDecimations(void)
         return;
 
     ui->decimCombo->clear();
-    ui->decimCombo->addItem("None", 0);
-    if (rate >= 96000)
-        ui->decimCombo->addItem("2", 0);
-    if (rate >= 192000)
-        ui->decimCombo->addItem("4", 0);
-    if (rate >= 384000)
-        ui->decimCombo->addItem("8", 0);
-    if (rate >= 768000)
-        ui->decimCombo->addItem("16", 0);
-    if (rate >= 1536000)
-        ui->decimCombo->addItem("32", 0);
-    if (rate >= 3072000)
-        ui->decimCombo->addItem("64", 0);
-    if (rate >= 6144000)
-        ui->decimCombo->addItem("128", 0);
-//    if (rate >= 12288000)
-//        ui->decimCombo->addItem("256", 0);
-//    if (rate >= 24576000)
-//        ui->decimCombo->addItem("512", 0);
+    
+    for (decim = 0; decim < MAX_DECIM && rate >= MIN_RATE * (1 << decim); decim++) {
+        ui->decimCombo->addItem(decim_str[decim], 0);
+    }
 
     decimationChanged(0);
 }
