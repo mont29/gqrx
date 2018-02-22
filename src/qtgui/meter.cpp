@@ -217,7 +217,7 @@ void CMeter::DrawOverlay()
     painter.drawLine(QLineF(marg, hline+8, hstop, hline+8));    // bottom line
     for (i = 0; i <= num_tics; i++) {
         const qreal xpos = marg + i * step_tic;
-        if (x & 1)
+        if (i & 1)
             //minor tics
             painter.drawLine(QLineF(xpos, minstart, xpos, hline));
         else
