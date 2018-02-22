@@ -1,4 +1,16 @@
 
+      2.11: Released TBD...
+
+  IMPROVED: Microtelecom Perseus integration.
+
+
+      2.10: Released January 21, 2018
+
+     FIXED: Crash when starting gqrx using hackrf.
+     FIXED: Spelling errors.
+  IMPROVED: SDRPlay integration.
+
+
        2.9: Released November 11, 2017
 
        NEW: Airspy HF+ support.
